@@ -1,0 +1,852 @@
+/**
+ * Advanced Product Filters — storefront stylesheet.
+ *
+ * Built entirely with CSS custom properties, Flexbox and Grid — no
+ * Bootstrap, no preprocessor required. Every value a merchant is likely
+ * to want to brand lives in the `:root` block below; override any of
+ * them from a child theme without touching the rest of the file.
+ */
+
+:root {
+	--apf-primary: #111111;
+	--apf-accent: #2271b1;
+	--apf-text: #1a1a1a;
+	--apf-text-muted: #767676;
+	--apf-border: #e5e5e5;
+	--apf-bg: #ffffff;
+	--apf-bg-subtle: #f7f7f7;
+	--apf-radius-sm: 4px;
+	--apf-radius-md: 8px;
+	--apf-radius-pill: 999px;
+	--apf-gap: 14px;
+	--apf-font: inherit;
+	--apf-transition: 180ms ease;
+	--apf-sidebar-width: 280px;
+	--apf-mobile-breakpoint: 782px;
+	--apf-swatch-size: 20px;
+	--apf-z-offcanvas: 100000;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--apf-text: #f0f0f0;
+		--apf-text-muted: #a3a3a3;
+		--apf-border: #333333;
+		--apf-bg: #1c1c1c;
+		--apf-bg-subtle: #262626;
+	}
+}
+
+/* -------------------------------------------------------------------- */
+/* Layout                                                                */
+/* -------------------------------------------------------------------- */
+
+.apf-shop-layout {
+	display: flex;
+	align-items: flex-start;
+	gap: 32px;
+	width: 100%;
+}
+
+.apf-shop-main {
+	flex: 1 1 0%;
+	min-width: 0;
+}
+
+.apf-sidebar {
+	flex: 0 0 var(--apf-sidebar-width);
+	width: var(--apf-sidebar-width);
+	font-family: var(--apf-font);
+	color: var(--apf-text);
+	font-size: 14px;
+	line-height: 1.4;
+}
+
+.apf-sidebar.apf-sticky {
+	position: sticky;
+	top: 24px;
+	max-height: calc(100vh - 48px);
+	overflow-y: auto;
+	scrollbar-width: thin;
+}
+
+.apf-sidebar-header {
+	display: none;
+}
+
+.apf-toggle-button {
+	display: none;
+	align-items: center;
+	gap: 8px;
+	padding: 9px 16px;
+	background: var(--apf-bg);
+	border: 1px solid var(--apf-border);
+	border-radius: var(--apf-radius-pill);
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--apf-text);
+	cursor: pointer;
+	position: relative;
+	transition: border-color var(--apf-transition), background var(--apf-transition);
+}
+
+.apf-toggle-button:hover {
+	border-color: var(--apf-primary);
+}
+
+.apf-toggle-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 5px;
+	border-radius: var(--apf-radius-pill);
+	background: var(--apf-primary);
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+}
+
+.apf-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+	z-index: var(--apf-z-offcanvas);
+	opacity: 0;
+	transition: opacity var(--apf-transition);
+}
+
+.apf-overlay:not([hidden]) {
+	opacity: 1;
+}
+
+/* -------------------------------------------------------------------- */
+/* Sections                                                              */
+/* -------------------------------------------------------------------- */
+
+.apf-section {
+	border-bottom: 1px solid var(--apf-border);
+	padding: 18px 0;
+}
+
+.apf-sidebar-body > .apf-section:first-child {
+	padding-top: 0;
+}
+
+.apf-section-title {
+	margin: 0;
+}
+
+.apf-section-toggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	background: none;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--apf-text);
+	cursor: pointer;
+	text-align: left;
+}
+
+.apf-section-label {
+	font-weight: 600;
+}
+
+.apf-chevron {
+	flex: none;
+	color: var(--apf-text-muted);
+	transition: transform var(--apf-transition);
+}
+
+.apf-section-toggle[aria-expanded="false"] .apf-chevron {
+	transform: rotate(-90deg);
+}
+
+.apf-section-toggle::after {
+	content: "";
+}
+
+.apf-section-content {
+	overflow: hidden;
+	margin-top: 14px;
+	animation: apf-fade-in 220ms ease;
+}
+
+.apf-section-content[hidden] {
+	display: none;
+}
+
+@keyframes apf-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* -------------------------------------------------------------------- */
+/* Active filters                                                        */
+/* -------------------------------------------------------------------- */
+
+.apf-active-filters {
+	padding-top: 0;
+}
+
+.apf-active-filters-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 12px;
+}
+
+.apf-active-filters-header .apf-section-label {
+	color: var(--apf-text-muted);
+	font-weight: 500;
+}
+
+.apf-reset-all {
+	background: none;
+	border: 0;
+	padding: 0;
+	font-size: 13px;
+	color: var(--apf-text-muted);
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.apf-reset-all:hover {
+	color: var(--apf-primary);
+}
+
+.apf-chip-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.apf-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 10px;
+	background: var(--apf-bg-subtle);
+	border-radius: var(--apf-radius-pill);
+	font-size: 13px;
+	color: var(--apf-text);
+	white-space: nowrap;
+}
+
+.apf-chip-sm {
+	padding: 4px 8px;
+	font-size: 12px;
+}
+
+.apf-chip-remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: none;
+	border: 0;
+	padding: 0;
+	color: var(--apf-text-muted);
+	cursor: pointer;
+	line-height: 1;
+}
+
+.apf-chip-remove:hover {
+	color: var(--apf-primary);
+}
+
+/* -------------------------------------------------------------------- */
+/* Term lists (categories, attributes, brand, tags)                     */
+/* -------------------------------------------------------------------- */
+
+.apf-term-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.apf-term-item {
+	list-style: none;
+}
+
+.apf-term-row {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.apf-term-expand {
+	flex: none;
+	width: 16px;
+	height: 16px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: none;
+	border: 0;
+	padding: 0;
+	color: var(--apf-text-muted);
+	cursor: pointer;
+	transition: transform var(--apf-transition);
+}
+
+.apf-term-item.apf-has-children[data-expanded="true"] > .apf-term-row .apf-term-expand {
+	transform: rotate(90deg);
+}
+
+.apf-term-children {
+	list-style: none;
+	margin: 10px 0 0 22px;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.apf-term-children[hidden] {
+	display: none;
+}
+
+.apf-checkbox-label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	width: 100%;
+	padding: 3px 6px;
+	margin: -3px -6px;
+	border-radius: var(--apf-radius-sm);
+	transition: background var(--apf-transition), color var(--apf-transition);
+}
+
+.apf-checkbox-label:hover {
+	background: var(--apf-bg-subtle);
+}
+
+.apf-checkbox-label input {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+}
+
+.apf-checkbox-box {
+	flex: none;
+	width: 14px;
+	height: 14px;
+	border-radius: 3px;
+	border: 1px solid var(--apf-border);
+	position: relative;
+	transition: background var(--apf-transition), border-color var(--apf-transition);
+}
+
+.apf-checkbox-label input:checked + .apf-checkbox-box {
+	background: var(--apf-primary);
+	border-color: var(--apf-primary);
+}
+
+.apf-checkbox-label input:checked + .apf-checkbox-box::after {
+	content: "";
+	position: absolute;
+	left: 4px;
+	top: 1px;
+	width: 4px;
+	height: 8px;
+	border: solid #fff;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+}
+
+.apf-checkbox-label input:checked ~ .apf-term-name {
+	font-weight: 600;
+}
+
+.apf-checkbox-label input:focus-visible + .apf-checkbox-box {
+	outline: 2px solid var(--apf-accent);
+	outline-offset: 2px;
+}
+
+.apf-term-name {
+	flex: 1 1 auto;
+	color: var(--apf-text);
+}
+
+.apf-term-count {
+	flex: none;
+	color: var(--apf-text-muted);
+	font-size: 12.5px;
+}
+
+/* Selected terms rendered as removable chips inline in the list. */
+.apf-checkbox-label:has(input:checked) {
+	background: var(--apf-bg-subtle);
+	border-radius: var(--apf-radius-pill);
+	padding: 6px 10px;
+	margin: -6px -10px -6px 0;
+}
+
+/* -------------------------------------------------------------------- */
+/* Swatches: color, image, buttons, label pills                         */
+/* -------------------------------------------------------------------- */
+
+.apf-term-list-color,
+.apf-term-list-image {
+	gap: 12px;
+}
+
+.apf-swatch {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+	padding: 4px 6px;
+	margin: -4px -6px;
+	border-radius: var(--apf-radius-sm);
+	transition: background var(--apf-transition);
+}
+
+.apf-swatch:hover {
+	background: var(--apf-bg-subtle);
+}
+
+.apf-swatch input {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+}
+
+.apf-swatch-circle {
+	flex: none;
+	width: var(--apf-swatch-size);
+	height: var(--apf-swatch-size);
+	border-radius: 50%;
+	background: var(--apf-swatch-color, #ccc);
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	box-shadow: 0 0 0 2px transparent;
+	transition: box-shadow var(--apf-transition), transform var(--apf-transition);
+}
+
+.apf-swatch:hover .apf-swatch-circle {
+	transform: scale(1.08);
+}
+
+.apf-swatch.apf-selected .apf-swatch-circle {
+	box-shadow: 0 0 0 2px var(--apf-bg), 0 0 0 4px var(--apf-primary);
+}
+
+.apf-swatch-image {
+	flex: none;
+	width: 28px;
+	height: 28px;
+	border-radius: var(--apf-radius-sm);
+	background-size: cover;
+	background-position: center;
+	background-color: var(--apf-bg-subtle);
+	border: 1px solid var(--apf-border);
+	transition: box-shadow var(--apf-transition), transform var(--apf-transition);
+}
+
+.apf-swatch:hover .apf-swatch-image {
+	transform: scale(1.05);
+}
+
+.apf-swatch.apf-selected .apf-swatch-image {
+	box-shadow: 0 0 0 2px var(--apf-primary);
+}
+
+.apf-swatch-label {
+	color: var(--apf-text);
+}
+
+.apf-term-list-buttons,
+.apf-term-list-label {
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.apf-pill {
+	display: inline-flex;
+	align-items: center;
+	padding: 7px 14px;
+	border: 1px solid var(--apf-border);
+	border-radius: var(--apf-radius-pill);
+	font-size: 13px;
+	color: var(--apf-text);
+	cursor: pointer;
+	transition: border-color var(--apf-transition), background var(--apf-transition), transform var(--apf-transition), color var(--apf-transition);
+}
+
+.apf-pill:hover {
+	border-color: var(--apf-primary);
+	transform: translateY(-1px);
+}
+
+.apf-pill input {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+}
+
+.apf-pill:has(input:checked) {
+	background: var(--apf-primary);
+	border-color: var(--apf-primary);
+	color: #fff;
+}
+
+.apf-term-list-label .apf-pill {
+	padding: 5px 12px;
+	border-color: transparent;
+	background: var(--apf-bg-subtle);
+}
+
+.apf-term-list-label .apf-pill:has(input:checked) {
+	background: var(--apf-primary);
+	color: #fff;
+}
+
+/* -------------------------------------------------------------------- */
+/* Dropdown                                                              */
+/* -------------------------------------------------------------------- */
+
+.apf-dropdown {
+	width: 100%;
+	padding: 9px 10px;
+	border: 1px solid var(--apf-border);
+	border-radius: var(--apf-radius-sm);
+	background: var(--apf-bg);
+	color: var(--apf-text);
+	font-size: 13px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Search / AJAX search                                                  */
+/* -------------------------------------------------------------------- */
+
+.apf-term-search,
+.apf-ajax-search {
+	margin-bottom: 12px;
+	position: relative;
+}
+
+.apf-term-search-input,
+.apf-ajax-search-input {
+	width: 100%;
+	padding: 8px 10px;
+	border: 1px solid var(--apf-border);
+	border-radius: var(--apf-radius-sm);
+	font-size: 13px;
+	background: var(--apf-bg);
+	color: var(--apf-text);
+}
+
+.apf-ajax-search-results {
+	position: absolute;
+	top: calc(100% + 4px);
+	left: 0;
+	right: 0;
+	background: var(--apf-bg);
+	border: 1px solid var(--apf-border);
+	border-radius: var(--apf-radius-sm);
+	max-height: 220px;
+	overflow-y: auto;
+	z-index: 10;
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.apf-ajax-search-results[hidden] {
+	display: none;
+}
+
+.apf-ajax-search-result {
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 10px;
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.apf-ajax-search-result:hover,
+.apf-ajax-search-result.apf-active {
+	background: var(--apf-bg-subtle);
+}
+
+.apf-selected-pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 8px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Price slider                                                         */
+/* -------------------------------------------------------------------- */
+
+.apf-price-slider {
+	position: relative;
+	height: 20px;
+	margin: 6px 4px 10px;
+}
+
+.apf-price-slider-track {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: var(--apf-border);
+	border-radius: 2px;
+	transform: translateY(-50%);
+}
+
+.apf-price-slider-range {
+	position: absolute;
+	height: 100%;
+	background: var(--apf-primary);
+	border-radius: 2px;
+}
+
+.apf-price-input {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 20px;
+	margin: 0;
+	appearance: none;
+	-webkit-appearance: none;
+	background: transparent;
+	pointer-events: none;
+}
+
+.apf-price-input::-webkit-slider-thumb {
+	appearance: none;
+	-webkit-appearance: none;
+	pointer-events: auto;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: var(--apf-bg);
+	border: 2px solid var(--apf-primary);
+	cursor: grab;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+	transition: transform var(--apf-transition);
+}
+
+.apf-price-input::-webkit-slider-thumb:hover {
+	transform: scale(1.15);
+}
+
+.apf-price-input::-moz-range-thumb {
+	pointer-events: auto;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: var(--apf-bg);
+	border: 2px solid var(--apf-primary);
+	cursor: grab;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.apf-price-input::-webkit-slider-runnable-track,
+.apf-price-input::-moz-range-track {
+	background: transparent;
+}
+
+.apf-price-labels {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 13px;
+	color: var(--apf-text-muted);
+}
+
+/* -------------------------------------------------------------------- */
+/* Rating                                                                */
+/* -------------------------------------------------------------------- */
+
+.apf-stars {
+	display: inline-flex;
+	gap: 2px;
+	flex: none;
+}
+
+.apf-star-filled {
+	color: #f5a623;
+}
+
+.apf-star-empty {
+	color: var(--apf-border);
+}
+
+/* -------------------------------------------------------------------- */
+/* Toggle sections (sale / featured / new) + switches                   */
+/* -------------------------------------------------------------------- */
+
+.apf-toggle-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	cursor: pointer;
+}
+
+.apf-toggle-text {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+}
+
+.apf-switch {
+	position: relative;
+	display: inline-flex;
+	width: 36px;
+	height: 20px;
+	flex: none;
+}
+
+.apf-switch input {
+	position: absolute;
+	opacity: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	cursor: pointer;
+	z-index: 1;
+}
+
+.apf-switch-track {
+	position: absolute;
+	inset: 0;
+	background: var(--apf-border);
+	border-radius: var(--apf-radius-pill);
+	transition: background var(--apf-transition);
+}
+
+.apf-switch-track::before {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+	transition: transform var(--apf-transition);
+}
+
+.apf-switch input:checked ~ .apf-switch-track {
+	background: var(--apf-primary);
+}
+
+.apf-switch input:checked ~ .apf-switch-track::before {
+	transform: translateX(16px);
+}
+
+.apf-switch-inline {
+	margin-right: 4px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Footer / buttons                                                      */
+/* -------------------------------------------------------------------- */
+
+.apf-sidebar-footer {
+	position: sticky;
+	bottom: 0;
+	padding-top: 14px;
+	background: var(--apf-bg);
+}
+
+.apf-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: 12px 16px;
+	border-radius: var(--apf-radius-sm);
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	border: 1px solid transparent;
+	transition: opacity var(--apf-transition);
+}
+
+.apf-btn-primary {
+	background: var(--apf-primary);
+	color: #fff;
+}
+
+.apf-btn-primary:hover {
+	opacity: 0.9;
+}
+
+/* -------------------------------------------------------------------- */
+/* Standalone Elementor widgets                                          */
+/* -------------------------------------------------------------------- */
+
+.apf-standalone-widget {
+	font-family: var(--apf-font);
+	color: var(--apf-text);
+	font-size: 14px;
+}
+
+.apf-infinite-sentinel {
+	height: 1px;
+}
+
+.apf-standalone-grid[aria-busy="true"],
+.apf-shop-main[aria-busy="true"] {
+	opacity: 0.55;
+	pointer-events: none;
+	transition: opacity var(--apf-transition);
+}
+
+/* -------------------------------------------------------------------- */
+/* Loading state                                                        */
+/* -------------------------------------------------------------------- */
+
+.apf-sidebar.apf-loading {
+	opacity: 0.7;
+}
+
+/* -------------------------------------------------------------------- */
+/* Responsive: tablet                                                    */
+/* -------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+	.apf-sidebar {
+		--apf-sidebar-width: 240px;
+	}
+}
+
+.apf-close-offcanvas,
+.apf-overlay {
+	display: none;
+}
+
+/*
+ * The mobile offcanvas breakpoint is configurable per-site (Settings →
+ * Mobile Offcanvas Breakpoint), so the actual `@media` rules below are
+ * generated with the real pixel value and injected as an inline style
+ * by APF_Frontend::ensure_assets() — CSS custom properties cannot be
+ * used inside an `@media` feature value, so a static breakpoint here
+ * would ignore that setting entirely.
+ */
