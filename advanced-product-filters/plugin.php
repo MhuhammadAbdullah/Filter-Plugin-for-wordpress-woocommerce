@@ -39,6 +39,28 @@ register_activation_hook( __FILE__, array( 'APF_Activator', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'APF_Deactivator', 'deactivate' ) );
 
 /**
+ * Declares compatibility with the WooCommerce features that require an
+ * explicit opt-in (High-Performance Order Storage / custom order tables,
+ * and the Cart & Checkout blocks). This plugin never reads or writes
+ * order data and never touches the cart/checkout templates — it only
+ * queries products and taxonomies — so it is safe to declare full
+ * compatibility with both. Without this, WooCommerce shows an "incompatible
+ * plugin" admin notice purely because no compatibility was declared, not
+ * because anything actually conflicts.
+ *
+ * @return void
+ */
+function apf_declare_woocommerce_compatibility(): void {
+	if ( ! class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+		return;
+	}
+
+	\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', APF_FILE, true );
+	\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', APF_FILE, true );
+}
+add_action( 'before_woocommerce_init', 'apf_declare_woocommerce_compatibility' );
+
+/**
  * Boots the plugin once all plugins are loaded so we can safely detect
  * WooCommerce and other third-party dependencies.
  *
