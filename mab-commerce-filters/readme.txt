@@ -7,7 +7,7 @@ Requires PHP: 8.2
 WC requires at least: 7.0
 WC tested up to: 10.9
 Requires Plugins: woocommerce
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,27 @@ there is nothing for it to conflict with on block-based Cart/Checkout
 pages.
 
 == Changelog ==
+
+= 1.0.3 =
+* Fix filtering not working: the selection data passed to each filter
+  type's query builder and its facet re-render used two different
+  shapes depending on whether the request came from a checkbox click
+  (AJAX POST) or a query-string/back-forward reload, and neither side
+  understood the other's shape. This broke category, attribute
+  (color/size), brand/tag, stock, rating and sale filtering on
+  GET-driven loads (shared/bookmarked URLs, the Elementor Products Grid
+  widget's own render, and reload-after-back-navigation), and broke
+  checked-state persistence — and therefore multi-filter combinations —
+  after every AJAX response.
+* Fix pagination: page links generated without a stable base/format so
+  clicking page 2+ during AJAX filtering always reloaded page 1.
+* Fix Reset not clearing an active price selection.
+* Fix a price filter's own "Apply" button never actually submitting
+  when enabled.
+* Fix removing a price pill collapsing the range to $0–$0 instead of
+  clearing it.
+* Front-end AJAX errors (bad nonce, non-JSON response, HTTP failure)
+  are now logged to the console instead of failing silently.
 
 = 1.0.2 =
 * Fix a fatal "Typed property must not be accessed before initialization"

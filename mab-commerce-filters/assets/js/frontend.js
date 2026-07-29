@@ -61,11 +61,26 @@
 
 		fetch( SETTINGS.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
 			.then( function ( response ) {
-				return response.json();
+				if ( ! response.ok ) {
+					throw new Error( 'MAB Commerce Filters: request failed with HTTP ' + response.status );
+				}
+				return response.text();
 			} )
-			.then( function ( json ) {
+			.then( function ( text ) {
+				var json;
+				try {
+					json = JSON.parse( text );
+				} catch ( parseError ) {
+					// A PHP notice/warning printed before the JSON (a
+					// misbehaving theme/plugin, WP_DEBUG_DISPLAY output,
+					// etc.) corrupts the response body. Surface it instead
+					// of failing silently, since that's indistinguishable
+					// from "filtering does nothing" otherwise.
+					throw new Error( 'MAB Commerce Filters: could not parse AJAX response as JSON — ' + text.slice( 0, 300 ) );
+				}
+
 				if ( ! json || ! json.success ) {
-					return;
+					throw new Error( 'MAB Commerce Filters: AJAX request unsuccessful — ' + ( json && json.data && json.data.message ? json.data.message : 'unknown error' ) );
 				}
 
 				var data = json.data;
@@ -94,7 +109,10 @@
 
 				wrapper.dispatchEvent( new CustomEvent( 'mabcf:filtered', { detail: data, bubbles: true } ) );
 			} )
-			['catch']( function () {} )
+			['catch']( function ( error ) {
+				// eslint-disable-next-line no-console
+				console.error( error );
+			} )
 			.then( function () {
 				setLoading( wrapper, false );
 			} );
@@ -262,6 +280,22 @@
 			el.classList.remove( 'mabcf-swatch--active' );
 		} );
 
+		// Price bounds are hidden inputs, so form.reset() only restores
+		// them to whatever value was last server-rendered — which, once a
+		// price filter has been applied, IS the narrowed selection, not
+		// the full range. Explicitly snap them back to the slider's own
+		// absolute min/max so a full reset actually clears price too.
+		form.querySelectorAll( '.mabcf-price-slider' ).forEach( function ( slider ) {
+			var inputMin = slider.querySelector( '.mabcf-price-slider__input-min' );
+			var inputMax = slider.querySelector( '.mabcf-price-slider__input-max' );
+			if ( inputMin ) {
+				inputMin.value = slider.dataset.min;
+			}
+			if ( inputMax ) {
+				inputMax.value = slider.dataset.max;
+			}
+		} );
+
 		runFilter( wrapper, form );
 	} );
 
@@ -356,11 +390,18 @@
 				return Math.round( raw / step ) * step;
 			}
 
-			function commit( silent ) {
+			function commit( forceSubmit ) {
 				var wrapper = slider.closest( '.mabcf' );
 				var form = slider.closest( '.mabcf-form' );
 				var settings = form ? getFormSettings( form ) : {};
-				if ( ! silent && settings.instant && ! applyBtn ) {
+
+				// A forced commit (the slider's own "Filter" apply button)
+				// always submits. Otherwise — a drag release or a
+				// keyboard nudge — only auto-submit when the filter set is
+				// instant AND this slider has no apply button of its own;
+				// when it does, the user must click that button, exactly
+				// like the forced-commit branch above handles.
+				if ( forceSubmit || ( settings.instant && ! applyBtn ) ) {
 					runFilter( wrapper, form );
 				}
 			}
@@ -424,7 +465,7 @@
 
 			if ( applyBtn ) {
 				applyBtn.addEventListener( 'click', function () {
-					commit( false );
+					commit( true );
 				} );
 			}
 

@@ -123,8 +123,26 @@ final class ProductGridRenderer {
 	private function render_pagination( \WP_Query $query ): void {
 		$paged = max( 1, (int) ( $query->get( 'paged' ) ?: 1 ) );
 
+		/*
+		 * This grid is rendered from two very different contexts: a normal
+		 * page load (correct current URL) and an admin-ajax.php AJAX
+		 * response (current URL would be admin-ajax.php itself). Either
+		 * way, front-end JS intercepts every pagination click and reads
+		 * the page number back out of the query string — it never
+		 * actually navigates to these hrefs — so what matters is that the
+		 * links reliably carry a `paged=N` query arg, not that they are
+		 * "correct" URLs. Building the base from a placeholder integer
+		 * (WordPress core's own paginate_links() idiom) guarantees a
+		 * query-string link regardless of permalink structure, avoiding
+		 * the default `/page/N/` path form that the JS wouldn't parse.
+		 */
+		$big  = 999999999;
+		$base = str_replace( (string) $big, '%#%', esc_url( add_query_arg( 'paged', $big ) ) );
+
 		$links = paginate_links(
 			array(
+				'base'      => $base,
+				'format'    => '',
 				'total'     => (int) $query->max_num_pages,
 				'current'   => $paged,
 				'type'      => 'array',

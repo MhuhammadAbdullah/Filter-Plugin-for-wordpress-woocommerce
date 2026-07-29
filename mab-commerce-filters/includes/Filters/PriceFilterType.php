@@ -148,16 +148,29 @@ final class PriceFilterType extends AbstractFilterType {
 	 * {@inheritDoc}
 	 */
 	public function apply_query( array $filter, array &$args, $selected ): void {
-		if ( ! is_array( $selected ) || ( ! isset( $selected['min'] ) && ! isset( $selected['max'] ) ) ) {
+		if ( ! is_array( $selected ) ) {
+			return;
+		}
+
+		// Hidden slider inputs are always present in the form, so an
+		// explicitly cleared bound (e.g. by the "remove filter" pill,
+		// which blanks the input's value) arrives as an empty string
+		// rather than being absent. Treat that the same as "not set" —
+		// otherwise it would resolve to `(float) '' === 0.0` and produce
+		// a `_price BETWEEN 0 AND 0` clause that matches nothing.
+		$has_min = isset( $selected['min'] ) && '' !== $selected['min'];
+		$has_max = isset( $selected['max'] ) && '' !== $selected['max'];
+
+		if ( ! $has_min && ! $has_max ) {
 			return;
 		}
 
 		$clause = array( 'key' => '_price', 'type' => 'DECIMAL(10,2)' ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 
-		if ( isset( $selected['min'], $selected['max'] ) ) {
+		if ( $has_min && $has_max ) {
 			$clause['value']   = array( (float) $selected['min'], (float) $selected['max'] );
 			$clause['compare'] = 'BETWEEN';
-		} elseif ( isset( $selected['min'] ) ) {
+		} elseif ( $has_min ) {
 			$clause['value']   = (float) $selected['min'];
 			$clause['compare'] = '>=';
 		} else {
