@@ -7,7 +7,7 @@ Requires PHP: 8.2
 WC requires at least: 7.0
 WC tested up to: 10.9
 Requires Plugins: woocommerce
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,13 @@ there is nothing for it to conflict with on block-based Cart/Checkout
 pages.
 
 == Changelog ==
+
+= 1.0.2 =
+* Fix a fatal "Typed property must not be accessed before initialization"
+  error on every front-end page load when Elementor was active, caused
+  by SingleFilterWidget assigning its properties after calling
+  parent::__construct() (Elementor's base widget constructor reads them
+  back via get_name()/get_title()/get_icon() before returning).
 
 = 1.0.1 =
 * Declare WooCommerce feature compatibility (HPOS / custom order tables,

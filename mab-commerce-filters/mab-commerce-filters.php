@@ -3,7 +3,7 @@
  * Plugin Name:       MAB Commerce Filters
  * Plugin URI:        https://mabcommercefilters.com
  * Description:       Premium WooCommerce AJAX Product Filters for Elementor. Category, price, color, size, brand, tag, rating, stock and custom attribute filters with a drag & drop filter builder.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Requires at least: 6.0
  * Requires PHP:      8.2
  * Requires Plugins:  woocommerce
@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'MABCF_VERSION', '1.0.1' );
+define( 'MABCF_VERSION', '1.0.2' );
 define( 'MABCF_FILE', __FILE__ );
 define( 'MABCF_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MABCF_URL', plugin_dir_url( __FILE__ ) );

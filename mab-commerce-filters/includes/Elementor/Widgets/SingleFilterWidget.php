@@ -67,12 +67,17 @@ final class SingleFilterWidget extends AbstractMabcfWidget {
 	 * @param array<string, mixed>|null $args Elementor element args (framework-passed).
 	 */
 	public function __construct( string $mode = 'category', string $name = 'mabcf-category-filter', string $title = '', string $icon = 'eicon-filter', $data = array(), $args = null ) {
-		parent::__construct( $data, $args );
-
+		// Elementor's own Widget_Base::__construct() calls back into
+		// get_name()/get_title()/get_icon() before returning, so the
+		// typed properties they read must be set *before* the parent
+		// constructor runs — otherwise PHP throws "must not be accessed
+		// before initialization" the first time Elementor touches them.
 		$this->mode         = $mode;
 		$this->name         = $name;
 		$this->widget_title = $title ?: __( 'Filter', 'mab-commerce-filters' );
 		$this->icon         = $icon;
+
+		parent::__construct( $data, $args );
 	}
 
 	/**
