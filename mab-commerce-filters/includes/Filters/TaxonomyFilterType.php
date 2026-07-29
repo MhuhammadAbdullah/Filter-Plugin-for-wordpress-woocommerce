@@ -96,7 +96,7 @@ final class TaxonomyFilterType extends AbstractFilterType {
 		$input_type   = 'radio' === $this->setting( $filter, 'input', 'checkbox' ) ? 'radio' : 'checkbox';
 		$show_count   = (bool) $this->setting( $filter, 'show_count', true );
 		$view         = $this->setting( $filter, 'view', 'list' );
-		$selected_set = array_flip( $this->to_array( $selected['value'] ?? array() ) );
+		$selected_set = array_flip( $this->to_array( $selected ) );
 
 		$class = 'mabcf-option-list--' . sanitize_html_class( $style ) . ' mabcf-option-list--' . sanitize_html_class( $view );
 		$html  = '<ul class="mabcf-option-list ' . esc_attr( $class ) . '">';

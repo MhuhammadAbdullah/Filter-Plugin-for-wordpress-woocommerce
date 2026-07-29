@@ -54,6 +54,34 @@ final class SystemStatusPage extends AbstractAdminPage {
 
 		echo '</tbody></table>';
 
+		echo '<h2>' . esc_html__( 'WooCommerce Feature Compatibility', 'mab-commerce-filters' ) . '</h2>';
+		echo '<table class="widefat striped"><tbody>';
+
+		$features_util_available = class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class );
+
+		$this->row(
+			__( 'High-Performance Order Storage (HPOS)', 'mab-commerce-filters' ),
+			$features_util_available ? __( 'Declared compatible', 'mab-commerce-filters' ) : __( 'N/A — WooCommerce version predates the Features API', 'mab-commerce-filters' ),
+			$features_util_available ? true : null
+		);
+		$this->row(
+			__( 'Cart & Checkout Blocks', 'mab-commerce-filters' ),
+			$features_util_available ? __( 'Declared compatible', 'mab-commerce-filters' ) : __( 'N/A — WooCommerce version predates the Features API', 'mab-commerce-filters' ),
+			$features_util_available ? true : null
+		);
+
+		if ( class_exists( \Automattic\WooCommerce\Utilities\OrderUtil::class ) ) {
+			$hpos_enabled = \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+			$this->row(
+				__( 'HPOS Currently Enabled on This Store', 'mab-commerce-filters' ),
+				$hpos_enabled ? __( 'Yes (orders table)', 'mab-commerce-filters' ) : __( 'No (post table)', 'mab-commerce-filters' ),
+				null
+			);
+		}
+
+		echo '</tbody></table>';
+		echo '<p class="description">' . esc_html__( 'MAB Commerce Filters only ever reads/filters WooCommerce products — it never reads or writes order data, so it works identically whether HPOS or the legacy post-based order storage is active, and it does not render any classic cart/checkout markup that could conflict with the Cart & Checkout blocks.', 'mab-commerce-filters' ) . '</p>';
+
 		echo '<h2>' . esc_html__( 'Database Tables', 'mab-commerce-filters' ) . '</h2>';
 		echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Table', 'mab-commerce-filters' ) . '</th><th>' . esc_html__( 'Status', 'mab-commerce-filters' ) . '</th><th>' . esc_html__( 'Rows', 'mab-commerce-filters' ) . '</th></tr></thead><tbody>';
 

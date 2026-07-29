@@ -159,14 +159,41 @@ abstract class AbstractFilterType implements FilterTypeInterface {
 	}
 
 	/**
-	 * Normalises a selected request value into a string array.
+	 * Normalises a selected request value into a flat string array.
 	 *
-	 * @param mixed $selected Raw selected value(s).
+	 * Selection reaches filter types in two different shapes depending on
+	 * where the request came from, and this must accept both:
+	 *
+	 * - Raw checkbox POST (AJAX/admin-ajax): `mabcf_filter[12][]=a&...`
+	 *   parses to a plain, 0-indexed array — `['a', 'b']`.
+	 * - Query-string driven selection (`Services\UrlSyncService::from_request()`,
+	 *   used for the initial page load, the Elementor widgets' own
+	 *   server-side render, and WooCommerce main-query integration on
+	 *   shared/bookmarked URLs or after a browser back/forward reload) —
+	 *   wrapped as `['value' => ['a', 'b']]`.
+	 *
+	 * Both `apply_query()` (query building) and `render()` (checked-state)
+	 * call this, so keeping it shape-agnostic here is what keeps those two
+	 * code paths — and every entry point that feeds them — consistent.
+	 *
+	 * @param mixed $selected Raw selected value(s), in either shape above.
 	 * @return string[]
 	 */
 	protected function to_array( $selected ): array {
 		if ( is_array( $selected ) ) {
-			return array_map( 'strval', $selected );
+			if ( array_key_exists( 'value', $selected ) ) {
+				return $this->to_array( $selected['value'] );
+			}
+
+			$values = array();
+
+			foreach ( $selected as $item ) {
+				if ( is_scalar( $item ) ) {
+					$values[] = (string) $item;
+				}
+			}
+
+			return $values;
 		}
 
 		if ( '' === $selected || null === $selected ) {

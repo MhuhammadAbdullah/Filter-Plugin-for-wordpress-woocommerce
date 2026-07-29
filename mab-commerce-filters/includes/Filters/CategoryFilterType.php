@@ -78,7 +78,7 @@ final class CategoryFilterType extends AbstractFilterType {
 		$show_count   = (bool) $this->setting( $filter, 'show_count', true );
 		$searchable   = (bool) $this->setting( $filter, 'searchable', false );
 		$limit        = (int) $this->setting( $filter, 'show_limit', 10 );
-		$selected_set = array_flip( $this->to_array( $selected['value'] ?? array() ) );
+		$selected_set = array_flip( $this->to_array( $selected ) );
 
 		$search_html = $searchable
 			? '<input type="search" class="mabcf-filter__search" placeholder="' . esc_attr__( 'Search categories…', 'mab-commerce-filters' ) . '">'

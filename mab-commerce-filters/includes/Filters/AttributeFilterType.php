@@ -138,7 +138,7 @@ final class AttributeFilterType extends AbstractFilterType {
 
 		$style        = $filter['display_style'] ?? 'list';
 		$show_count   = (bool) $this->setting( $filter, 'show_count', false );
-		$selected_set = array_flip( $this->to_array( $selected['value'] ?? array() ) );
+		$selected_set = array_flip( $this->to_array( $selected ) );
 
 		$html = '<div class="mabcf-swatches mabcf-swatches--' . esc_attr( sanitize_html_class( $style ) ) . '">';
 

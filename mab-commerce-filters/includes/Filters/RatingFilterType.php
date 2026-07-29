@@ -61,7 +61,7 @@ final class RatingFilterType extends AbstractFilterType {
 	 */
 	public function render( array $filter, array $query_context, array $selected ): string {
 		$options      = $this->get_options( $filter, $query_context );
-		$selected_set = array_flip( $this->to_array( $selected['value'] ?? array() ) );
+		$selected_set = array_flip( $this->to_array( $selected ) );
 
 		$html = '<ul class="mabcf-option-list mabcf-option-list--rating">';
 

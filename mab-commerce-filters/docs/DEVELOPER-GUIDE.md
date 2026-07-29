@@ -6,6 +6,7 @@
 mab-commerce-filters.php        Bootstrap: constants, autoloader, activation hooks
 includes/
   Autoloader.php                PSR-4 autoloader (MABCommerceFilters\ → includes/)
+  Compatibility.php             Declares WooCommerce HPOS / Cart & Checkout Blocks support
   Plugin.php                    Singleton that wires every service together
   Activator.php / Deactivator.php
   Database/
@@ -56,6 +57,40 @@ interface FilterTypeInterface {
 `category`, `taxonomy` (+ aliases `tag`, `brand`, `custom_taxonomy`),
 `attribute`, `price`, `rating`, `stock`, `sale`, `search`, `meta` (+
 aliases `custom_field`, `boolean`, `date`, `number`, `text`).
+
+### WooCommerce compatibility (HPOS / Cart & Checkout Blocks)
+
+`Compatibility::register()` is called directly from
+`mab-commerce-filters.php`, immediately after the autoloader — **not**
+from `Plugin::boot()`. That distinction matters: WooCommerce fires
+`before_woocommerce_init` (the only hook
+`\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility()`
+accepts) from inside its own `plugins_loaded` callback. This plugin's
+`Plugin::boot()` is deferred to `plugins_loaded` priority 20 so it can
+safely check `class_exists( '\WooCommerce' )`; waiting for that would
+risk registering the `before_woocommerce_init` listener after
+WooCommerce has already fired it. Registering the listener unconditionally
+at file-load time avoids that race — it's a harmless no-op when
+WooCommerce isn't installed, since the action never fires.
+
+`Compatibility::declare_feature_compatibility()` declares support for:
+
+- `custom_order_tables` (High-Performance Order Storage) — safe because
+  the plugin only ever queries/filters `product` posts via `WP_Query`,
+  `WC_Product` and taxonomies; it never reads or writes order data in
+  any form (no `wc_get_orders()`, no `shop_order` queries, no direct
+  order-table SQL), so HPOS vs. legacy post-based order storage is
+  irrelevant to it.
+- `cart_checkout_blocks` — safe because the plugin never renders or
+  hooks into cart/checkout markup (classic shortcodes or blocks); it is
+  purely a product-catalog filtering layer.
+
+Both checks are guarded by `class_exists( FeaturesUtil::class )` so
+activation stays clean on WooCommerce versions older than 6.4 (the
+`MABCF_MIN_WC` constant, `7.0`, already exceeds that). Current
+compatibility status is also surfaced to store owners under
+**MAB Commerce Filters → System Status → WooCommerce Feature
+Compatibility**.
 
 ### Request lifecycle (AJAX)
 
