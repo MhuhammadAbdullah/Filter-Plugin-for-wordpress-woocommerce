@@ -2,11 +2,12 @@
 Contributors: mabcommerce
 Tags: woocommerce, product filter, ajax filter, elementor, filter
 Requires at least: 6.0
-Tested up to: 6.7
+Tested up to: 7.0
 Requires PHP: 8.2
 WC requires at least: 7.0
-WC tested up to: 9.4
-Stable tag: 1.0.0
+WC tested up to: 10.9
+Requires Plugins: woocommerce
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,6 +41,9 @@ widgets.
   License.
 * Built for scale: cached facet counts, indexed custom tables, assets
   loaded only where a filter can render.
+* Fully compatible with High-Performance Order Storage (HPOS) and the
+  Cart & Checkout blocks — the plugin only ever filters products and
+  never touches order data or classic cart/checkout markup.
 
 == Installation ==
 
@@ -68,7 +72,27 @@ classic "MAB Commerce Filters" widget in any widget area.
 
 Yes, text domain `mab-commerce-filters`, `.pot`-ready strings throughout.
 
+= Is it compatible with High-Performance Order Storage (HPOS)? =
+
+Yes. The plugin declares compatibility with `custom_order_tables` via
+`FeaturesUtil::declare_compatibility()` on `before_woocommerce_init`,
+and never reads or writes order data in the first place, so it behaves
+identically whether HPOS or legacy post-based order storage is active.
+
+= Is it compatible with the Cart & Checkout blocks? =
+
+Yes, declared via the same mechanism. The plugin filters the product
+catalog only; it does not render or hook into cart/checkout markup, so
+there is nothing for it to conflict with on block-based Cart/Checkout
+pages.
+
 == Changelog ==
+
+= 1.0.1 =
+* Declare WooCommerce feature compatibility (HPOS / custom order tables,
+  Cart & Checkout blocks) via `FeaturesUtil::declare_compatibility()`.
+* Add a WooCommerce Feature Compatibility panel to System Status.
+* Bump tested-up-to versions (WordPress 7.0, WooCommerce 10.9).
 
 = 1.0.0 =
 * Initial release.
